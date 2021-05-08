@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="move.js"></script>
+    <style>
+        div.d1{
+            width:440px;
+            margin:auto;
+            display:flex;
+            flex-wrap: wrap;
+            background-color: darkgrey;
+            padding: 5px;
+            position: relative;
+        }
+        div.d2{
+            width:100px;
+            height:100px;
+            margin: 5px;
+            background-color:lightgray;
+            text-align: center;
+        }
+        .d3{
+            width:100px;
+            height:100px;
+            line-height:100px;
+            font-size:50px;
+            font-weight: bold;
+            position: absolute;
+            transition:top 200ms,left 200ms;
+        }
+        .scale1{
+            animation-name:scale1;
+            animation-duration: 200ms;
+            animation-fill-mode: forwards;
+        }
+        @keyframes scale1 {
+            0%{transform: scale(0.1);}
+            100%{transform: scale(1);}
+        }
+        .scale2{
+            animation-name:scale2;
+            animation-duration: 50ms;
+            animation-fill-mode: forwards;
+        }
+        @keyframes scale2 {
+            0%{transform: scale(1);}
+            50%{transform: scale(1.2);}
+            100%{transform: scale(1);}
+        }
+        button{
+            line-height: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="d1">
+    <div class="d2" id="d00"></div>
+    <div class="d2" id="d01"></div>
+    <div class="d2" id="d02"></div>
+    <div class="d2" id="d03"></div>
+    <br>
+    <div class="d2" id="d10"></div>
+    <div class="d2" id="d11"></div>
+    <div class="d2" id="d12"></div>
+    <div class="d2" id="d13"></div>
+    <br>
+    <div class="d2" id="d20"></div>
+    <div class="d2" id="d21"></div>
+    <div class="d2" id="d22"></div>
+    <div class="d2" id="d23"></div>
+    <br>
+    <div class="d2" id="d30"></div>
+    <div class="d2" id="d31"></div>
+    <div class="d2" id="d32"></div>
+    <div class="d2" id="d33"></div>
+</div>
+<br>
+<div style="text-align: center"><button onclick="newgame()">new game</button></div>
+<script>
+    let text=[[0,0,0,0],
+             [0,0,0,0],
+             [0,0,0,0],
+             [0,0,0,0]];
+    update(text);
+    randomId();
+    randomId();
+    let obj={
+        handleEvent(event) {
+            switch(event.code){
+                case "ArrowDown":if(down())setTimeout(randomId,200);break;
+                case "ArrowLeft":if(left())setTimeout(randomId,200);break;
+                case "ArrowRight":if(right())setTimeout(randomId,200);break;
+                case "ArrowUp":if(up())setTimeout(randomId,200);break;
+            }
+        }
+    };
+    document.addEventListener("keyup",obj);
+
+    function newgame(){
+        //初始化
+        for(let i=0;i<4;i++)
+            for(let j=0;j<4;j++)
+                text[i][j]=0;
+        update(text);
+        //随机冒出
+        randomId();
+        randomId();
+        console.log(text);
+        show();
+    }
+
+
+    function randomId(){
+        //随机位置
+        let i=Math.floor(Math.random()*4);
+        let j=Math.floor(Math.random()*4);
+        while(true)
+        {
+            if(text[i][j]==0) break;
+            i=Math.floor(Math.random()*4);
+            j=Math.floor(Math.random()*4);
+        }
+        //随机数
+        let k=Math.random()<0.95?2:4;
+        //冒出
+        text[i][j]=k;
+        document.getElementById("n"+i+j).innerHTML=String(k);
+        document.getElementById("n"+i+j).style.color = setColor(k);
+        document.getElementById("n"+i+j).style.backgroundColor = setbackGroundColor(k);
+        document.getElementById("n"+i+j).classList.add("scale1");
+    }
+    //根据text的值更新UI
+    function update(arr){
+        //移除
+        for(let i=0;i<4;i++)
+            for(let j=0;j<4;j++)
+                if(document.getElementById("n"+i+j)!=null)
+                    document.getElementById("n"+i+j).remove();
+        //更新
+        for(let i=0;i<4;i++)
+            for(let j=0;j<4;j++){
+                let div = document.createElement("div");
+                div.className = "d3";
+                div.id = "n" + i + j;
+                div.innerHTML =String(arr[i][j]);
+                div.style.color = setColor(arr[i][j]);
+                div.style.backgroundColor = setbackGroundColor(arr[i][j]);
+                div.style.top = setTop(i);
+                div.style.left = setLeft(j);
+                document.getElementById("d" + i + j).append(div);
+            }
+    }
+
+    function setColor(num){
+        switch (num) {
+            case 0:return "transparent";
+            case 2:
+            case 4:return "gray";
+            default:return "white";
+        }
+    }
+    function setbackGroundColor(num){
+        switch (num) {
+            case 0:return "transparent";
+            case 2:return "whitesmoke";
+            case 4:return "lightyellow";
+            case 8:return "lightsalmon";
+            case 16:return "lightcoral";
+            case 32:return "indianred";
+            case 64:return "red";
+            default:return "gold";
+        }
+    }
+    function setTop(i){
+        return `${10+110*i}px`;
+    }
+
+    function setLeft(j){
+        return `${10+110*j}px`;
+    }
+
+</script>
+</body>
+</html>
